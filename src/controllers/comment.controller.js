@@ -189,13 +189,18 @@ const deleteComment = asyncHandler(async (req, res) => {
     if (comment.owner.toString() !== user.toString()) {
         throw new apiError(403, "You are not allowed to delete this comment");
     }
-    const deletedComment = await Comment.findByIdAndDelete(commentId);
-    if (!deletedComment) {
+    try {
+        await Comment.findByIdAndDelete(commentId);
+        await Like.deleteMany({comment: commentId})
+        if (isValidObjectId(commentId)) {
+            throw new apiError(500, "Failed to delete comment");
+        }
+        return res
+        .status(200)
+        .json(new apiResponse(200, null, "Comment deleted"))
+    } catch (error) {
         throw new apiError(500, "Failed to delete comment");
     }
-    return res
-    .status(200)
-    .json(new apiResponse(200, null, "Comment deleted"))
 })
 
 export {
