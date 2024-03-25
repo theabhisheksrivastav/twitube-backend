@@ -120,10 +120,11 @@ const publishANewVideo = asyncHandler(async (req, res) => {
     5. Return the video details
     */
     const { videoFile, thumbnail, title, description } = req.body
-    const { id } = req.user
-    if (!id) {
-        throw new apiError(401, null, "Unauthorized")
+    const owner = await User.findById(req.user._id)
+    if (!owner) {
+        throw new apiError(404, null, "User not found")
     }
+    
     if (!videoFile || !thumbnail || !title || !description) {
         throw new apiError(400, null, "Please provide all the required details")
     }
@@ -138,15 +139,15 @@ const publishANewVideo = asyncHandler(async (req, res) => {
         videoFile: uploadedVideo.secure_url,
         thumbnail: uploadedThumbnail.secure_url,
         duration: uploadedVideo.duration,
-        isPublished: true,
-        owner: id
+        isPublished: false,
+        owner: owner._id
     })
     if (!newVideo) {
         throw new apiError(500, null, "An error occurred while publishing the video")
     }
     return res
     .status(201)
-    .json(new apiResponse(201, newVideo, "Video published successfully"))
+    .json(new apiResponse(201, newVideo, "Video uploaded successfully"))
 
 })
 
