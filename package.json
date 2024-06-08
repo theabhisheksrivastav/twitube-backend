@@ -1,7 +1,7 @@
 {
-  "name": "chaiaurbackend",
+  "name": "twitube-backend",
   "version": "1.0.0",
-  "description": "backend oroject",
+  "description": "backend project",
   "type": "module",
   "main": "index.js",
   "scripts": {
